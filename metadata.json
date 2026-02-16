@@ -1,0 +1,7 @@
+{
+  "name": "চলো পাল্টায় যুব কল্যাণ সমিতি ",
+  "description": "A comprehensive management dashboard for Cholo Paltay Jubo Kalyan Somity with features for member management, savings, and loan tracking.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
