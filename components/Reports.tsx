@@ -50,15 +50,23 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
   const [txs, setTxs] = useState<Transaction[]>([]);
 
   useEffect(() => {
+    let isMounted = true;
     const fetchData = async () => {
-      const [membersData, txsData] = await Promise.all([
-        db.getMembers(),
-        db.getTransactions()
-      ]);
-      setMembers(membersData);
-      setTxs(txsData);
+      try {
+        const [membersData, txsData] = await Promise.all([
+          db.getMembers(),
+          db.getTransactions()
+        ]);
+        if (isMounted) {
+          setMembers(membersData);
+          setTxs(txsData);
+        }
+      } catch (err) {
+        console.error("Reports fetchData failed", err);
+      }
     };
     fetchData();
+    return () => { isMounted = false; };
   }, []);
 
   // Helper function to export CSV with Excel compatibility (UTF-8 BOM)

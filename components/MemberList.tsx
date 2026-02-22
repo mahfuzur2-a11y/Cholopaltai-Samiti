@@ -16,11 +16,19 @@ const MemberList: React.FC<MemberListProps> = ({ type = 'all', onBack, isAdmin }
   const [members, setMembers] = useState<Member[]>([]);
 
   useEffect(() => {
+    let isMounted = true;
     const fetchMembers = async () => {
-      const data = await db.getMembers();
-      setMembers(data);
+      try {
+        const data = await db.getMembers();
+        if (isMounted) {
+          setMembers(data);
+        }
+      } catch (err) {
+        console.error("MemberList fetchMembers failed", err);
+      }
     };
     fetchMembers();
+    return () => { isMounted = false; };
   }, []);
 
   // Current Date Info

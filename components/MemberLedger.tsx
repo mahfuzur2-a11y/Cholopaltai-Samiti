@@ -25,15 +25,23 @@ const MemberLedger: React.FC<MemberLedgerProps> = ({ onBack }) => {
   const [allTransactions, setAllTransactions] = useState<Transaction[]>([]);
 
   useEffect(() => {
+    let isMounted = true;
     const fetchData = async () => {
-      const [membersData, txsData] = await Promise.all([
-        db.getMembers(),
-        db.getTransactions()
-      ]);
-      setMembers(membersData);
-      setAllTransactions(txsData);
+      try {
+        const [membersData, txsData] = await Promise.all([
+          db.getMembers(),
+          db.getTransactions()
+        ]);
+        if (isMounted) {
+          setMembers(membersData);
+          setAllTransactions(txsData);
+        }
+      } catch (err) {
+        console.error("MemberLedger fetchData failed", err);
+      }
     };
     fetchData();
+    return () => { isMounted = false; };
   }, []);
 
   const selectedMember = members.find(m => m.id === selectedMemberId);

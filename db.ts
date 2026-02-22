@@ -56,6 +56,10 @@ export const db = {
         console.log("Firebase initialized with default users.");
       }
     } catch (e: any) {
+      if (e.name === 'AbortError' || e.message?.includes('aborted')) {
+        console.log("Firebase init aborted gracefully");
+        return;
+      }
       console.error("Firebase Error: ", e.message);
       alert("ডাটাবেজ কানেক্ট হতে পারছে না। দয়া করে Firebase Firestore-এ 'Security Rules' চেক করুন।");
     }
@@ -73,7 +77,10 @@ export const db = {
       const snap = await getDocs(collection(firestore, COLLECTIONS.USERS));
       const users = snap.docs.map(doc => doc.data() as User);
       return users.length > 0 ? users : DEFAULT_USERS;
-    } catch {
+    } catch (e: any) {
+      if (e.name === 'AbortError' || e.message?.includes('aborted')) {
+        return DEFAULT_USERS;
+      }
       return DEFAULT_USERS;
     }
   },
@@ -104,7 +111,11 @@ export const db = {
     try {
       const snap = await getDocs(collection(firestore, COLLECTIONS.MEMBERS));
       return snap.docs.map(doc => doc.data() as Member);
-    } catch (e) {
+    } catch (e: any) {
+      if (e.name === 'AbortError' || e.message?.includes('aborted')) {
+        console.log("Fetch aborted gracefully");
+        return [];
+      }
       console.error("Get members failed", e);
       return [];
     }
@@ -131,7 +142,11 @@ export const db = {
     try {
       const snap = await getDocs(collection(firestore, COLLECTIONS.TRANSACTIONS));
       return snap.docs.map(doc => doc.data() as Transaction);
-    } catch (e) {
+    } catch (e: any) {
+      if (e.name === 'AbortError' || e.message?.includes('aborted')) {
+        console.log("Fetch aborted gracefully");
+        return [];
+      }
       console.error("Get transactions failed", e);
       return [];
     }

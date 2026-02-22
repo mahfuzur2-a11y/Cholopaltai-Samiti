@@ -30,15 +30,23 @@ const ProfitDistribution: React.FC<ProfitDistributionProps> = ({ onBack }) => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
 
   useEffect(() => {
+    let isMounted = true;
     const fetchData = async () => {
-      const [membersData, txsData] = await Promise.all([
-        db.getMembers(),
-        db.getTransactions()
-      ]);
-      setMembers(membersData);
-      setTransactions(txsData);
+      try {
+        const [membersData, txsData] = await Promise.all([
+          db.getMembers(),
+          db.getTransactions()
+        ]);
+        if (isMounted) {
+          setMembers(membersData);
+          setTransactions(txsData);
+        }
+      } catch (err) {
+        console.error("ProfitDistribution fetchData failed", err);
+      }
     };
     fetchData();
+    return () => { isMounted = false; };
   }, []);
 
   // Calculate Net Profit for reference

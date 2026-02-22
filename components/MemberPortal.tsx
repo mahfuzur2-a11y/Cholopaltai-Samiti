@@ -18,11 +18,19 @@ const MemberPortal: React.FC<MemberPortalProps> = ({ onBack }) => {
   const [allTransactions, setAllTransactions] = useState<Transaction[]>([]);
 
   useEffect(() => {
+    let isMounted = true;
     const fetchTxs = async () => {
-      const data = await db.getTransactions();
-      setAllTransactions(data);
+      try {
+        const data = await db.getTransactions();
+        if (isMounted) {
+          setAllTransactions(data);
+        }
+      } catch (err) {
+        console.error("MemberPortal fetchTxs failed", err);
+      }
     };
     fetchTxs();
+    return () => { isMounted = false; };
   }, []);
 
   /* Fix: handleSearch now awaits the async db.getMembers() call */

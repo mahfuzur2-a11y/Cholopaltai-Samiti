@@ -36,15 +36,23 @@ const DashboardGrid: React.FC<DashboardGridProps> = ({ onNavigate, userRole, onL
   const [txs, setTxs] = useState<Transaction[]>([]);
 
   useEffect(() => {
+    let isMounted = true;
     const fetchData = async () => {
-      const [membersData, txsData] = await Promise.all([
-        db.getMembers(),
-        db.getTransactions()
-      ]);
-      setMembers(membersData);
-      setTxs(txsData);
+      try {
+        const [membersData, txsData] = await Promise.all([
+          db.getMembers(),
+          db.getTransactions()
+        ]);
+        if (isMounted) {
+          setMembers(membersData);
+          setTxs(txsData);
+        }
+      } catch (err) {
+        console.error("Dashboard fetchData failed", err);
+      }
     };
     fetchData();
+    return () => { isMounted = false; };
   }, []);
 
   const metrics = useMemo(() => {
@@ -83,6 +91,7 @@ const DashboardGrid: React.FC<DashboardGridProps> = ({ onNavigate, userRole, onL
     { type: ViewType.LOAN_VIEW, label: 'ঋণ আদায় ও বিতরণ', icon: <FileText className="text-cyan-500" />, color: 'bg-cyan-50', restricted: false },
     { type: ViewType.SAVINGS_WITHDRAWAL, label: 'সঞ্চয় উত্তোলন', icon: <MinusCircle className="text-pink-500" />, color: 'bg-pink-50', restricted: false },
     { type: ViewType.REPORTS, label: 'রিপোর্ট', icon: <BarChart3 className="text-emerald-600" />, color: 'bg-emerald-100/50', restricted: false },
+    { type: ViewType.MONTHLY_SHEET, label: 'মাসিক শীট', icon: <FileText className="text-indigo-600" />, color: 'bg-indigo-50', restricted: false },
   ];
 
   return (

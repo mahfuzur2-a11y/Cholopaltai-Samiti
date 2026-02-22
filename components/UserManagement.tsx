@@ -13,11 +13,19 @@ const UserManagement: React.FC<UserManagementProps> = ({ onBack }) => {
   const [users, setUsers] = useState<User[]>([]);
 
   useEffect(() => {
+    let isMounted = true;
     const fetchUsers = async () => {
-      const data = await db.getUsers();
-      setUsers(data);
+      try {
+        const data = await db.getUsers();
+        if (isMounted) {
+          setUsers(data);
+        }
+      } catch (err) {
+        console.error("UserManagement fetchUsers failed", err);
+      }
     };
     fetchUsers();
+    return () => { isMounted = false; };
   }, []);
 
   const [newUser, setNewUser] = useState<{ name: string; username: string; role: 'user' | 'admin'; password: string }>({ 

@@ -16,11 +16,19 @@ const TransactionList: React.FC<TransactionListProps> = ({ type, onBack }) => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
 
   useEffect(() => {
+    let isMounted = true;
     const fetchTransactions = async () => {
-      const data = await db.getTransactions();
-      setTransactions(data);
+      try {
+        const data = await db.getTransactions();
+        if (isMounted) {
+          setTransactions(data);
+        }
+      } catch (err) {
+        console.error("TransactionList fetchTransactions failed", err);
+      }
     };
     fetchTransactions();
+    return () => { isMounted = false; };
   }, []);
 
   const monthNames = [
