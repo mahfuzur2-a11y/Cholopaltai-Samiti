@@ -410,7 +410,7 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
           </table>
           <div className="mt-20 hidden print:flex justify-between px-10">
              <div className="text-center w-32 border-t border-slate-900 pt-1 font-black text-[10px]">ক্যাশিয়ার</div>
-             <div className="text-center w-32 border-t border-slate-900 pt-1 font-black text-[10px]">সম্পাদক</div>
+             <div className="text-center w-32 border-t border-slate-900 pt-1 font-black text-[10px]">সাধারণ সম্পাদক</div>
              <div className="text-center w-32 border-t border-slate-900 pt-1 font-black text-[10px]">সভাপতি</div>
           </div>
         </div>
@@ -579,7 +579,7 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
 
           <div className="mt-32 hidden print:flex justify-between px-10 w-full max-w-5xl">
              <div className="text-center w-40 border-t border-slate-900 pt-1 font-black text-[12px]">ক্যাশিয়ার</div>
-             <div className="text-center w-40 border-t border-slate-900 pt-1 font-black text-[12px]">সম্পাদক</div>
+             <div className="text-center w-40 border-t border-slate-900 pt-1 font-black text-[12px]">সাধারণ সম্পাদক</div>
              <div className="text-center w-40 border-t border-slate-900 pt-1 font-black text-[12px]">সভাপতি</div>
           </div>
         </div>
@@ -634,7 +634,7 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
           </table>
           <div className="mt-32 hidden print:flex justify-between px-10">
              <div className="text-center w-40 border-t border-slate-900 pt-1 font-black">ক্যাশিয়ার</div>
-             <div className="text-center w-40 border-t border-slate-900 pt-1 font-black">সম্পাদক</div>
+             <div className="text-center w-40 border-t border-slate-900 pt-1 font-black">সাধারণ সম্পাদক</div>
              <div className="text-center w-40 border-t border-slate-900 pt-1 font-black">সভাপতি</div>
           </div>
         </div>
