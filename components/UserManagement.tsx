@@ -117,6 +117,30 @@ const UserManagement: React.FC<UserManagementProps> = ({ onBack }) => {
           </table>
         </div>
       </div>
+
+      {/* Danger Zone */}
+      <div className="mt-12 p-8 bg-rose-50 rounded-[2rem] border border-rose-100">
+        <h3 className="text-lg font-black text-rose-800 mb-2 flex items-center gap-2">
+          <Trash2 size={20} /> ডেঞ্জার জোন (Danger Zone)
+        </h3>
+        <p className="text-rose-600 text-sm font-bold mb-6">সতর্কতা: এটি করলে সমিতির সকল সদস্য, লেনদেন এবং ইউজার ডাটা চিরতরে মুছে যাবে। এটি আর ফিরে পাওয়া সম্ভব নয়।</p>
+        <button 
+          onClick={async () => {
+            if (window.confirm('আপনি কি নিশ্চিতভাবে সকল ডাটা মুছে ফেলতে চান? এটি আর ফিরে পাওয়া যাবে না!')) {
+              const success = await db.clearAllData();
+              if (success) {
+                alert('সকল ডাটা সফলভাবে মুছে ফেলা হয়েছে। অ্যাপটি রিলোড হচ্ছে...');
+                window.location.reload();
+              } else {
+                alert('ডাটা মুছতে সমস্যা হয়েছে।');
+              }
+            }
+          }}
+          className="px-6 py-3 bg-rose-600 text-white rounded-xl font-black hover:bg-rose-700 transition-colors shadow-lg shadow-rose-200 active:scale-95"
+        >
+          সকল ডাটা মুছে ফেলুন
+        </button>
+      </div>
     </div>
   );
 };

@@ -1,28 +1,11 @@
 
-import { initializeApp } from 'firebase/app';
-import { 
-  getFirestore, 
-  collection, 
-  getDocs, 
-  setDoc, 
-  doc, 
-  deleteDoc, 
-  updateDoc, 
-  getDoc,
-  query,
-  limit,
-  addDoc
-} from 'firebase/firestore';
+import { createClient } from '@supabase/supabase-js';
 import { User, Member, Transaction } from './types';
 
-const firebaseConfig = {
-  apiKey: "AIzaSyCWI18604Qi3xcojGktWnZif0ksbpyyURs",
-  authDomain: "cholopailtai-samiti.firebaseapp.com",
-  projectId: "cholopailtai-samiti",
-  storageBucket: "cholopailtai-samiti.firebasestorage.app",
-  messagingSenderId: "599461032386",
-  appId: "1:599461032386:web:f7f2aac39cd6c057efe65b"
-};
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://gbqtzytvtlrxfzlciwjd.supabase.co';
+const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdicXR6eXR2dGxyeGZ6bGNpd2pkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE5MTYzMjMsImV4cCI6MjA4NzQ5MjMyM30.9fSNZ1ZC3y3tSR3VGJyr_cEfebOwxXFTo18u6KGttxQ';
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const COLLECTIONS = {
   USERS: 'users',
@@ -39,34 +22,27 @@ const DEFAULT_USERS: User[] = [
   { id: '2', username: 'user', name: 'অফিসার', role: 'user', password: 'user' }
 ];
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const firestore = getFirestore(app);
-
 export const db = {
   isCloudEnabled: () => true,
 
   init: async () => {
     try {
-      const usersSnap = await getDocs(query(collection(firestore, COLLECTIONS.USERS), limit(1)));
-      if (usersSnap.empty) {
-        for (const user of DEFAULT_USERS) {
-          await setDoc(doc(firestore, COLLECTIONS.USERS, user.id), user);
-        }
-        console.log("Firebase initialized with default users.");
+      const { data: users, error } = await supabase.from(COLLECTIONS.USERS).select('id').limit(1);
+      if (error) throw error;
+      
+      if (!users || users.length === 0) {
+        const { error: insertError } = await supabase.from(COLLECTIONS.USERS).insert(DEFAULT_USERS);
+        if (insertError) throw insertError;
+        console.log("Supabase initialized with default users.");
       }
     } catch (e: any) {
-      if (e.name === 'AbortError' || e.message?.includes('aborted')) {
-        console.log("Firebase init aborted gracefully");
-        return;
-      }
-      console.error("Firebase Error: ", e.message);
-      alert("ডাটাবেজ কানেক্ট হতে পারছে না। দয়া করে Firebase Firestore-এ 'Security Rules' চেক করুন।");
+      console.error("Supabase Init Error: ", e.message);
+      alert("ডাটাবেজ কানেক্ট হতে পারছে না। দয়া করে Supabase টেবিল এবং পারমিশন চেক করুন।");
     }
   },
 
   resetDatabase: async () => {
-    if (confirm("এটি করলে আপনার ক্লাউডের ডাটা ডিলিট হবে না (সিকিউরিটির জন্য)। শুধুমাত্র ব্রাউজারের লগইন সেশন রিসেট হবে।")) {
+    if (confirm("এটি করলে শুধুমাত্র ব্রাউজারের লগইন সেশন রিসেট হবে।")) {
       sessionStorage.clear();
       window.location.reload();
     }
@@ -74,22 +50,19 @@ export const db = {
 
   getUsers: async (): Promise<User[]> => {
     try {
-      const snap = await getDocs(collection(firestore, COLLECTIONS.USERS));
-      const users = snap.docs.map(doc => doc.data() as User);
-      return users.length > 0 ? users : DEFAULT_USERS;
+      const { data, error } = await supabase.from(COLLECTIONS.USERS).select('*');
+      if (error) throw error;
+      return data && data.length > 0 ? data : DEFAULT_USERS;
     } catch (e: any) {
-      if (e.name === 'AbortError' || e.message?.includes('aborted')) {
-        return DEFAULT_USERS;
-      }
+      console.error("Get users failed", e);
       return DEFAULT_USERS;
     }
   },
 
   saveUsers: async (users: User[]): Promise<void> => {
     try {
-      for (const user of users) {
-        await setDoc(doc(firestore, COLLECTIONS.USERS, user.id), user);
-      }
+      const { error } = await supabase.from(COLLECTIONS.USERS).upsert(users);
+      if (error) throw error;
     } catch (e) {
       console.error("Save users failed", e);
     }
@@ -109,13 +82,10 @@ export const db = {
 
   getMembers: async (): Promise<Member[]> => {
     try {
-      const snap = await getDocs(collection(firestore, COLLECTIONS.MEMBERS));
-      return snap.docs.map(doc => doc.data() as Member);
+      const { data, error } = await supabase.from(COLLECTIONS.MEMBERS).select('*');
+      if (error) throw error;
+      return data || [];
     } catch (e: any) {
-      if (e.name === 'AbortError' || e.message?.includes('aborted')) {
-        console.log("Fetch aborted gracefully");
-        return [];
-      }
       console.error("Get members failed", e);
       return [];
     }
@@ -123,7 +93,8 @@ export const db = {
 
   addMember: async (member: Member): Promise<void> => {
     try {
-      await setDoc(doc(firestore, COLLECTIONS.MEMBERS, member.id), member);
+      const { error } = await supabase.from(COLLECTIONS.MEMBERS).upsert(member);
+      if (error) throw error;
     } catch (e) {
       console.error("Add member failed", e);
       throw e;
@@ -132,7 +103,8 @@ export const db = {
 
   deleteMember: async (id: string): Promise<void> => {
     try {
-      await deleteDoc(doc(firestore, COLLECTIONS.MEMBERS, id));
+      const { error } = await supabase.from(COLLECTIONS.MEMBERS).delete().eq('id', id);
+      if (error) throw error;
     } catch (e) {
       console.error("Delete member failed", e);
     }
@@ -140,13 +112,10 @@ export const db = {
 
   getTransactions: async (): Promise<Transaction[]> => {
     try {
-      const snap = await getDocs(collection(firestore, COLLECTIONS.TRANSACTIONS));
-      return snap.docs.map(doc => doc.data() as Transaction);
+      const { data, error } = await supabase.from(COLLECTIONS.TRANSACTIONS).select('*');
+      if (error) throw error;
+      return data || [];
     } catch (e: any) {
-      if (e.name === 'AbortError' || e.message?.includes('aborted')) {
-        console.log("Fetch aborted gracefully");
-        return [];
-      }
       console.error("Get transactions failed", e);
       return [];
     }
@@ -154,14 +123,25 @@ export const db = {
 
   addTransaction: async (tx: Transaction): Promise<void> => {
     try {
-      const txRef = doc(collection(firestore, COLLECTIONS.TRANSACTIONS));
-      await setDoc(txRef, { ...tx, id: txRef.id });
+      // Insert transaction
+      const { data: newTx, error: txError } = await supabase
+        .from(COLLECTIONS.TRANSACTIONS)
+        .insert([{ ...tx, id: undefined }]) // Let Supabase generate UUID if not provided
+        .select()
+        .single();
+      
+      if (txError) throw txError;
 
       if (tx.memberId !== 'SYSTEM') {
-        const mRef = doc(firestore, COLLECTIONS.MEMBERS, tx.memberId);
-        const mSnap = await getDoc(mRef);
-        if (mSnap.exists()) {
-          const mData = mSnap.data() as Member;
+        const { data: mData, error: mError } = await supabase
+          .from(COLLECTIONS.MEMBERS)
+          .select('*')
+          .eq('id', tx.memberId)
+          .single();
+        
+        if (mError) throw mError;
+
+        if (mData) {
           let { totalSavings, totalLoan } = mData;
           
           if (tx.type === 'savings' || tx.type === 'admission_fee') totalSavings += tx.amount;
@@ -169,10 +149,15 @@ export const db = {
           else if (tx.type === 'loan_distribution') totalLoan += (tx.amount * 1.10);
           else if (tx.type === 'loan_collection') totalLoan -= tx.amount;
 
-          await updateDoc(mRef, { 
-            totalSavings: Math.max(0, totalSavings), 
-            totalLoan: Math.max(0, totalLoan) 
-          });
+          const { error: updateError } = await supabase
+            .from(COLLECTIONS.MEMBERS)
+            .update({ 
+              totalSavings: Math.max(0, totalSavings), 
+              totalLoan: Math.max(0, totalLoan) 
+            })
+            .eq('id', tx.memberId);
+          
+          if (updateError) throw updateError;
         }
       }
     } catch (e) {
