@@ -75,6 +75,9 @@ const App: React.FC = () => {
   };
 
   if (!currentUser) {
+    if (currentView === ViewType.MEMBER_PORTAL) {
+      return <MemberPortal onBack={() => setCurrentView(ViewType.DASHBOARD)} />;
+    }
     return <Login onLogin={handleLogin} onEnterPortal={() => setCurrentView(ViewType.MEMBER_PORTAL)} />;
   }
 
