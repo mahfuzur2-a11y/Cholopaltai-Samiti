@@ -123,31 +123,44 @@ export const db = {
 
   addTransaction: async (tx: Transaction): Promise<void> => {
     try {
-      // Insert transaction
-      const { data: newTx, error: txError } = await supabase
+      const amount = Number(tx.amount);
+      if (isNaN(amount)) throw new Error("Invalid amount");
+
+      const { error: txError } = await supabase
         .from(COLLECTIONS.TRANSACTIONS)
-        .insert([{ ...tx, id: undefined }]) // Let Supabase generate UUID if not provided
-        .select()
-        .single();
+        .insert([{ 
+          memberId: tx.memberId,
+          memberName: tx.memberName,
+          date: tx.date,
+          amount: amount,
+          type: tx.type,
+          remarks: tx.remarks || ''
+        }]);
       
       if (txError) throw txError;
 
-      if (tx.memberId !== 'SYSTEM') {
+      if (tx.memberId && tx.memberId !== 'SYSTEM') {
         const { data: mData, error: mError } = await supabase
           .from(COLLECTIONS.MEMBERS)
           .select('*')
           .eq('id', tx.memberId)
-          .single();
+          .maybeSingle();
         
         if (mError) throw mError;
 
         if (mData) {
-          let { totalSavings, totalLoan } = mData;
+          let totalSavings = Number(mData.totalSavings || 0);
+          let totalLoan = Number(mData.totalLoan || 0);
           
-          if (tx.type === 'savings' || tx.type === 'admission_fee') totalSavings += tx.amount;
-          else if (tx.type === 'savings_withdrawal') totalSavings -= tx.amount;
-          else if (tx.type === 'loan_distribution') totalLoan += (tx.amount * 1.10);
-          else if (tx.type === 'loan_collection') totalLoan -= tx.amount;
+          if (tx.type === 'savings' || tx.type === 'admission_fee') {
+            totalSavings += amount;
+          } else if (tx.type === 'savings_withdrawal') {
+            totalSavings -= amount;
+          } else if (tx.type === 'loan_distribution') {
+            totalLoan += (amount * 1.10);
+          } else if (tx.type === 'loan_collection') {
+            totalLoan -= amount;
+          }
 
           const { error: updateError } = await supabase
             .from(COLLECTIONS.MEMBERS)
@@ -160,9 +173,23 @@ export const db = {
           if (updateError) throw updateError;
         }
       }
+    } catch (e: any) {
+      console.error("Add transaction failed:", e);
+      throw new Error(e.message || "লেনদেন সংরক্ষণ করতে সমস্যা হয়েছে");
+    }
+  },
+
+  clearAllData: async (): Promise<boolean> => {
+    try {
+      const { error: txError } = await supabase.from(COLLECTIONS.TRANSACTIONS).delete().neq('id', '0');
+      const { error: mError } = await supabase.from(COLLECTIONS.MEMBERS).delete().neq('id', '0');
+      const { error: uError } = await supabase.from(COLLECTIONS.USERS).delete().neq('id', '1'); // Keep admin
+      
+      if (txError || mError || uError) throw new Error("Delete failed");
+      return true;
     } catch (e) {
-      console.error("Add transaction failed", e);
-      throw e;
+      console.error("Clear all data failed", e);
+      return false;
     }
   }
 };

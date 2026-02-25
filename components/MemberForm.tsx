@@ -47,10 +47,10 @@ const MemberForm: React.FC<MemberFormProps> = ({ onBack }) => {
       nomineeRelationship: formData.nomineeRelationship
     };
 
-    setTimeout(async () => {
+    try {
       await db.addMember(newMember);
       
-      // 1. Record the admission fee as a transaction (This will NOT update totalSavings)
+      // 1. Record the admission fee as a transaction
       await db.addTransaction({
         id: `ADM-${Date.now()}`,
         memberId: newMember.id,
@@ -61,7 +61,7 @@ const MemberForm: React.FC<MemberFormProps> = ({ onBack }) => {
         remarks: 'সদস্য ভর্তি ফি (আয়)'
       });
 
-      // 2. If there's an initial savings, record it as a savings transaction (This WILL update totalSavings)
+      // 2. If there's an initial savings, record it as a savings transaction
       const initSavingsAmount = parseFloat(formData.initialSavings);
       if (initSavingsAmount > 0) {
         await db.addTransaction({
@@ -75,7 +75,6 @@ const MemberForm: React.FC<MemberFormProps> = ({ onBack }) => {
         });
       }
 
-      setLoading(false);
       setSuccess(true);
       setFormData({
         id: '',
@@ -91,7 +90,12 @@ const MemberForm: React.FC<MemberFormProps> = ({ onBack }) => {
         nomineeRelationship: ''
       });
       setTimeout(() => setSuccess(false), 3000);
-    }, 1000);
+    } catch (err: any) {
+      console.error("Member creation failed:", err);
+      alert("সদস্য যুক্ত করতে সমস্যা হয়েছে: " + (err.message || "অজানা ত্রুটি"));
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

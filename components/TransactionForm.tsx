@@ -58,7 +58,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ type, label, onBack }
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // Bank withdrawal and bank deposit and expense do NOT need member selection
     const needsMember = type !== 'expense' && type !== 'bank_deposit' && type !== 'bank_withdrawal';
@@ -81,7 +81,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ type, label, onBack }
       remarks: remarks
     };
 
-    setTimeout(async () => {
+    try {
       await db.addTransaction(tx);
 
       // Record Savings Penalty if applicable (Only for 'savings' type)
@@ -123,7 +123,6 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ type, label, onBack }
         });
       }
 
-      setLoading(false);
       setSuccess(true);
       setSearchQuery('');
       setSelectedMember(null);
@@ -131,7 +130,12 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ type, label, onBack }
       setPenalty('');
       setRemarks('');
       setTimeout(() => setSuccess(false), 3000);
-    }, 1000);
+    } catch (err: any) {
+      console.error("Transaction failed:", err);
+      alert("লেনদেন সম্পন্ন করতে সমস্যা হয়েছে: " + (err.message || "অজানা ত্রুটি"));
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleMemberSelect = (member: any) => {
