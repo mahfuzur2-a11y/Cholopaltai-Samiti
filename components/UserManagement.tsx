@@ -28,7 +28,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ onBack }) => {
     return () => { isMounted = false; };
   }, []);
 
-  const [newUser, setNewUser] = useState<{ name: string; username: string; role: 'user' | 'admin'; password: string }>({ 
+  const [newUser, setNewUser] = useState<{ name: string; username: string; role: 'user' | 'admin' | 'viewer'; password: string }>({ 
     name: '', 
     username: '', 
     role: 'user', 
@@ -80,9 +80,10 @@ const UserManagement: React.FC<UserManagementProps> = ({ onBack }) => {
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             </div>
-            <select value={newUser.role} onChange={e => setNewUser({...newUser, role: e.target.value as 'user' | 'admin'})} className="w-full px-4 py-2.5 rounded-xl border bg-white outline-none font-bold">
+            <select value={newUser.role} onChange={e => setNewUser({...newUser, role: e.target.value as 'user' | 'admin' | 'viewer'})} className="w-full px-4 py-2.5 rounded-xl border bg-white outline-none font-bold">
               <option value="user">জেনারেল ইউজার</option>
               <option value="admin">সুপার অ্যাডমিন</option>
+              <option value="viewer">ভিউ অনলি (Viewer)</option>
             </select>
             <button type="submit" className="w-full py-3 bg-emerald-600 text-white rounded-xl font-black">তৈরি করুন</button>
           </form>
@@ -104,8 +105,12 @@ const UserManagement: React.FC<UserManagementProps> = ({ onBack }) => {
                   <td className="px-6 py-4 font-black text-slate-700">{u.name}</td>
                   <td className="px-6 py-4 font-bold text-slate-400">@{u.username}</td>
                   <td className="px-6 py-4 text-center">
-                    <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase ${u.role === 'admin' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
-                      {u.role}
+                    <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase ${
+                      u.role === 'admin' ? 'bg-emerald-100 text-emerald-700' : 
+                      u.role === 'viewer' ? 'bg-amber-100 text-amber-700' : 
+                      'bg-slate-100 text-slate-500'
+                    }`}>
+                      {u.role === 'admin' ? 'Super Admin' : u.role === 'viewer' ? 'View Only' : 'General User'}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-center">

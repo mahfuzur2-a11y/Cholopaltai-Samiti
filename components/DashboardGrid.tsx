@@ -24,7 +24,7 @@ import { db } from '../db';
 
 interface DashboardGridProps {
   onNavigate: (view: ViewType) => void;
-  userRole: 'admin' | 'user';
+  userRole: 'admin' | 'user' | 'viewer';
   onLogout: () => void;
 }
 
@@ -98,7 +98,7 @@ const DashboardGrid: React.FC<DashboardGridProps> = ({ onNavigate, userRole, onL
       <div className="mb-8 flex justify-between items-start md:items-end">
         <div>
           <h2 className="text-2xl font-bold text-slate-800 tracking-tight">চলো পাল্টায় যুব কল্যাণ সমিতি</h2>
-          <p className="text-slate-500 text-sm">স্বাগতম, {userRole === 'admin' ? 'অ্যাডমিন' : 'সদস্য'} প্যানেলে!</p>
+          <p className="text-slate-500 text-sm">স্বাগতম, {userRole === 'admin' ? 'অ্যাডমিন' : userRole === 'viewer' ? 'ভিউ অনলি' : 'অফিসার'} প্যানেলে!</p>
         </div>
         <button 
           onClick={onLogout}

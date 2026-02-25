@@ -8,9 +8,10 @@ interface TransactionFormProps {
   type: string;
   label: string;
   onBack: () => void;
+  userRole?: string;
 }
 
-const TransactionForm: React.FC<TransactionFormProps> = ({ type, label, onBack }) => {
+const TransactionForm: React.FC<TransactionFormProps> = ({ type, label, onBack, userRole }) => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [amount, setAmount] = useState<string>('');
@@ -80,6 +81,12 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ type, label, onBack }
       type: type as Transaction['type'],
       remarks: remarks
     };
+
+    if (userRole === 'viewer') {
+      alert('আপনার শুধুমাত্র দেখার অনুমতি আছে। আপনি কোনো লেনদেন করতে পারবেন না।');
+      setLoading(false);
+      return;
+    }
 
     try {
       await db.addTransaction(tx);

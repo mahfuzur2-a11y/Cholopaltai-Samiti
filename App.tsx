@@ -103,31 +103,31 @@ const App: React.FC = () => {
       case ViewType.DASHBOARD:
         return <DashboardGrid onNavigate={setCurrentView} userRole={currentUser.role} onLogout={handleLogout} />;
       case ViewType.NEW_MEMBER:
-        return <MemberForm onBack={() => setCurrentView(ViewType.DASHBOARD)} />;
+        return <MemberForm onBack={() => setCurrentView(ViewType.DASHBOARD)} userRole={currentUser.role} />;
       case ViewType.MEMBER_LIST:
-        return <MemberList onBack={() => setCurrentView(ViewType.DASHBOARD)} isAdmin={isAdmin} />;
+        return <MemberList onBack={() => setCurrentView(ViewType.DASHBOARD)} isAdmin={isAdmin} userRole={currentUser.role} />;
       case ViewType.SAVINGS_COLLECTION:
-        return <TransactionForm type="savings" label="সঞ্চয় আদায়" onBack={() => setCurrentView(ViewType.DASHBOARD)} />;
+        return <TransactionForm type="savings" label="সঞ্চয় আদায়" onBack={() => setCurrentView(ViewType.DASHBOARD)} userRole={currentUser.role} />;
       case ViewType.LOAN_COLLECTION:
-        return <TransactionForm type="loan_collection" label="ঋণ আদায়" onBack={() => setCurrentView(ViewType.DASHBOARD)} />;
+        return <TransactionForm type="loan_collection" label="ঋণ আদায়" onBack={() => setCurrentView(ViewType.DASHBOARD)} userRole={currentUser.role} />;
       case ViewType.LOAN_DISTRIBUTION:
-        return <TransactionForm type="loan_distribution" label="ঋণ বিতরণ" onBack={() => setCurrentView(ViewType.DASHBOARD)} />;
+        return <TransactionForm type="loan_distribution" label="ঋণ বিতরণ" onBack={() => setCurrentView(ViewType.DASHBOARD)} userRole={currentUser.role} />;
       case ViewType.EXPENSE:
-        return <TransactionForm type="expense" label="ব্যয় এন্ট্রি" onBack={() => setCurrentView(ViewType.DASHBOARD)} />;
+        return <TransactionForm type="expense" label="ব্যয় এন্ট্রি" onBack={() => setCurrentView(ViewType.DASHBOARD)} userRole={currentUser.role} />;
       case ViewType.SAVINGS_DUE:
-        return <MemberList type="savings_due" onBack={() => setCurrentView(ViewType.DASHBOARD)} isAdmin={isAdmin} />;
+        return <MemberList type="savings_due" onBack={() => setCurrentView(ViewType.DASHBOARD)} isAdmin={isAdmin} userRole={currentUser.role} />;
       case ViewType.LOAN_DUE:
-        return <MemberList type="loan_due" onBack={() => setCurrentView(ViewType.DASHBOARD)} isAdmin={isAdmin} />;
+        return <MemberList type="loan_due" onBack={() => setCurrentView(ViewType.DASHBOARD)} isAdmin={isAdmin} userRole={currentUser.role} />;
       case ViewType.SAVINGS_VIEW:
         return <TransactionList type="savings" onBack={() => setCurrentView(ViewType.DASHBOARD)} />;
       case ViewType.LOAN_VIEW:
         return <TransactionList type="loan" onBack={() => setCurrentView(ViewType.DASHBOARD)} />;
       case ViewType.SAVINGS_WITHDRAWAL:
-        return <TransactionForm type="savings_withdrawal" label="সঞ্চয় উত্তোলন" onBack={() => setCurrentView(ViewType.DASHBOARD)} />;
+        return <TransactionForm type="savings_withdrawal" label="সঞ্চয় উত্তোলন" onBack={() => setCurrentView(ViewType.DASHBOARD)} userRole={currentUser.role} />;
       case ViewType.BANK_DEPOSIT:
-        return <TransactionForm type="bank_deposit" label="ব্যাংক জমা" onBack={() => setCurrentView(ViewType.DASHBOARD)} />;
+        return <TransactionForm type="bank_deposit" label="ব্যাংক জমা" onBack={() => setCurrentView(ViewType.DASHBOARD)} userRole={currentUser.role} />;
       case ViewType.BANK_WITHDRAWAL:
-        return <TransactionForm type="bank_withdrawal" label="ব্যাংক উত্তোলন" onBack={() => setCurrentView(ViewType.DASHBOARD)} />;
+        return <TransactionForm type="bank_withdrawal" label="ব্যাংক উত্তোলন" onBack={() => setCurrentView(ViewType.DASHBOARD)} userRole={currentUser.role} />;
       case ViewType.REPORTS:
         return <Reports onBack={() => setCurrentView(ViewType.DASHBOARD)} />;
       case ViewType.MONTHLY_SHEET:

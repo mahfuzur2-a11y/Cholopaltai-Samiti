@@ -8,9 +8,10 @@ interface MemberListProps {
   type?: 'all' | 'savings_due' | 'loan_due';
   onBack: () => void;
   isAdmin: boolean;
+  userRole?: string;
 }
 
-const MemberList: React.FC<MemberListProps> = ({ type = 'all', onBack, isAdmin }) => {
+const MemberList: React.FC<MemberListProps> = ({ type = 'all', onBack, isAdmin, userRole }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [members, setMembers] = useState<Member[]>([]);
   const [editingMember, setEditingMember] = useState<Member | null>(null);
@@ -49,6 +50,10 @@ const MemberList: React.FC<MemberListProps> = ({ type = 'all', onBack, isAdmin }
   }, [members, type, searchTerm, targetSavings]);
 
   const handleDelete = async (id: string) => {
+    if (userRole === 'viewer') {
+      alert('আপনার শুধুমাত্র দেখার অনুমতি আছে। আপনি কোনো তথ্য মুছতে পারবেন না।');
+      return;
+    }
     if (!isAdmin) {
       alert('সতর্কতা: শুধুমাত্র অ্যাডমিন ডাটা ডিলিট করতে পারবেন!');
       return;
@@ -70,6 +75,11 @@ const MemberList: React.FC<MemberListProps> = ({ type = 'all', onBack, isAdmin }
     if (!editingMember) return;
     
     setIsUpdating(true);
+    if (userRole === 'viewer') {
+      alert('আপনার শুধুমাত্র দেখার অনুমতি আছে। আপনি কোনো তথ্য পরিবর্তন করতে পারবেন না।');
+      setIsUpdating(false);
+      return;
+    }
     try {
       await db.addMember(editingMember); // upsert handles update
       const updatedMembers = await db.getMembers();
@@ -140,13 +150,15 @@ const MemberList: React.FC<MemberListProps> = ({ type = 'all', onBack, isAdmin }
                   <div className="flex justify-center gap-2">
                     <button 
                       onClick={() => setEditingMember(m)}
-                      className="p-2 text-blue-600 hover:bg-blue-50 rounded-xl transition-all"
+                      disabled={userRole === 'viewer'}
+                      className={`p-2 rounded-xl transition-all ${userRole === 'viewer' ? 'text-slate-300 cursor-not-allowed' : 'text-blue-600 hover:bg-blue-50'}`}
                     >
                       <Edit2 size={16} />
                     </button>
                     <button 
                       onClick={() => handleDelete(m.id)}
-                      className={`p-2 rounded-xl transition-all ${isAdmin ? 'text-rose-600 hover:bg-rose-50' : 'text-slate-300 cursor-not-allowed'}`}
+                      disabled={userRole === 'viewer' || !isAdmin}
+                      className={`p-2 rounded-xl transition-all ${userRole === 'viewer' || !isAdmin ? 'text-slate-300 cursor-not-allowed' : 'text-rose-600 hover:bg-rose-50'}`}
                     >
                       <Trash2 size={16} />
                     </button>

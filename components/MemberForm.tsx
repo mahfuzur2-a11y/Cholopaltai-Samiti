@@ -5,9 +5,10 @@ import { Member } from '../types';
 
 interface MemberFormProps {
   onBack: () => void;
+  userRole?: string;
 }
 
-const MemberForm: React.FC<MemberFormProps> = ({ onBack }) => {
+const MemberForm: React.FC<MemberFormProps> = ({ onBack, userRole }) => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [formData, setFormData] = useState({
@@ -46,6 +47,12 @@ const MemberForm: React.FC<MemberFormProps> = ({ onBack }) => {
       nomineeName: formData.nomineeName,
       nomineeRelationship: formData.nomineeRelationship
     };
+
+    if (userRole === 'viewer') {
+      alert('আপনার শুধুমাত্র দেখার অনুমতি আছে। আপনি কোনো তথ্য যুক্ত করতে পারবেন না।');
+      setLoading(false);
+      return;
+    }
 
     try {
       await db.addMember(newMember);
