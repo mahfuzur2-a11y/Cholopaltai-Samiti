@@ -187,15 +187,15 @@ const MemberLedger: React.FC<MemberLedgerProps> = ({ onBack }) => {
       </div>
 
       {selectedMember ? (
-        <div className="bg-white p-4 md:p-10 rounded-[2.5rem] shadow-2xl border border-slate-100 print:shadow-none print:border-none print:p-4">
-          <div className="text-center mb-6 print:mb-4">
+        <div className="bg-white p-4 md:p-10 rounded-[2.5rem] shadow-2xl border border-slate-100 print:shadow-none print:border-none print:p-0">
+          <div className="text-center mb-10">
             <h1 className="text-3xl font-black text-slate-900 mb-1">চলো পাল্টায় যুব কল্যাণ সমিতি</h1>
             <p className="text-slate-500 font-bold flex items-center justify-center gap-2">
               সদস্য ব্যক্তিগত লেজার বহী <ChevronRight size={14} /> বছর: {selectedYear}
             </p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6 print:mb-4 bg-slate-50 p-6 rounded-3xl border border-slate-100">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8 bg-slate-50 p-6 rounded-3xl border border-slate-100">
             <div>
               <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">সদস্যের নাম</p>
               <p className="font-black text-slate-800 text-lg leading-tight">{selectedMember.name}</p>
@@ -310,7 +310,7 @@ const MemberLedger: React.FC<MemberLedgerProps> = ({ onBack }) => {
             </table>
           </div>
 
-          <div className="mt-12 print:mt-8 flex justify-between items-end px-10">
+          <div className="mt-20 flex justify-between items-end px-10">
              <div className="text-center group">
                 <div className="mb-2 hidden print:block text-slate-300">................................................</div>
                 <p className="border-t border-slate-300 pt-1 px-8 text-[11px] font-black text-slate-700 uppercase">ক্যাশিয়ার</p>
