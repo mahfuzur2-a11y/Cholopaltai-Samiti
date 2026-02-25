@@ -1,6 +1,6 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { Search, Edit2, Trash2, Printer, ShieldAlert } from 'lucide-react';
+import { Search, Edit2, Trash2, Printer, ShieldAlert, X, Save } from 'lucide-react';
 import { db } from '../db';
 import { Member } from '../types';
 
@@ -12,8 +12,9 @@ interface MemberListProps {
 
 const MemberList: React.FC<MemberListProps> = ({ type = 'all', onBack, isAdmin }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  /* Fix: Correctly initialize state and fetch data in useEffect */
   const [members, setMembers] = useState<Member[]>([]);
+  const [editingMember, setEditingMember] = useState<Member | null>(null);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -52,12 +53,33 @@ const MemberList: React.FC<MemberListProps> = ({ type = 'all', onBack, isAdmin }
       alert('সতর্কতা: শুধুমাত্র অ্যাডমিন ডাটা ডিলিট করতে পারবেন!');
       return;
     }
-    if (window.confirm('আপনি কি নিশ্চিতভাবে এই সদস্যের ডাটা ডিলিট করতে চান? এটি অপিরিবর্তনীয়।')) {
-      /* Fix: Await deleteMember and update local state */
-      await db.deleteMember(id);
+    if (window.confirm(`আপনি কি নিশ্চিতভাবে আইডি #${id} সদস্যের ডাটা ডিলিট করতে চান? এটি অপিরিবর্তনীয়।`)) {
+      try {
+        await db.deleteMember(id);
+        const updatedMembers = await db.getMembers();
+        setMembers(updatedMembers);
+        alert(`আইডি #${id} সফলভাবে ডিলিট হয়েছে।`);
+      } catch (err: any) {
+        alert(err.message || 'ডিলিট করতে সমস্যা হয়েছে।');
+      }
+    }
+  };
+
+  const handleUpdateMember = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingMember) return;
+    
+    setIsUpdating(true);
+    try {
+      await db.addMember(editingMember); // upsert handles update
       const updatedMembers = await db.getMembers();
       setMembers(updatedMembers);
-      alert(`আইডি ${id} সফলভাবে ডিলিট হয়েছে।`);
+      setEditingMember(null);
+      alert('সদস্যের তথ্য সফলভাবে আপডেট করা হয়েছে।');
+    } catch (err) {
+      alert('আপডেট করতে সমস্যা হয়েছে।');
+    } finally {
+      setIsUpdating(false);
     }
   };
 
@@ -116,7 +138,12 @@ const MemberList: React.FC<MemberListProps> = ({ type = 'all', onBack, isAdmin }
                 )}
                 <td className="px-8 py-5 print:hidden">
                   <div className="flex justify-center gap-2">
-                    <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-xl transition-all"><Edit2 size={16} /></button>
+                    <button 
+                      onClick={() => setEditingMember(m)}
+                      className="p-2 text-blue-600 hover:bg-blue-50 rounded-xl transition-all"
+                    >
+                      <Edit2 size={16} />
+                    </button>
                     <button 
                       onClick={() => handleDelete(m.id)}
                       className={`p-2 rounded-xl transition-all ${isAdmin ? 'text-rose-600 hover:bg-rose-50' : 'text-slate-300 cursor-not-allowed'}`}
@@ -138,6 +165,106 @@ const MemberList: React.FC<MemberListProps> = ({ type = 'all', onBack, isAdmin }
       {!isAdmin && (
         <div className="p-4 bg-amber-50 border-t border-amber-100 flex items-center gap-2 text-amber-700 text-xs font-bold">
           <ShieldAlert size={16} /> আপনি শুধুমাত্র ডাটা দেখতে পারবেন, পরিবর্তনের জন্য অ্যাডমিন পারমিশন প্রয়োজন।
+        </div>
+      )}
+
+      {/* Edit Modal */}
+      {editingMember && (
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+          <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-2xl overflow-hidden animate-in zoom-in-95 duration-300">
+            <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+              <h3 className="text-xl font-black text-slate-800">সদস্য তথ্য সংশোধন (# {editingMember.id})</h3>
+              <button onClick={() => setEditingMember(null)} className="p-2 hover:bg-slate-200 rounded-full transition-colors">
+                <X size={24} className="text-slate-400" />
+              </button>
+            </div>
+            <form onSubmit={handleUpdateMember} className="p-8 space-y-6 max-h-[70vh] overflow-y-auto custom-scrollbar">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">সদস্যের নাম</label>
+                  <input 
+                    required
+                    type="text" 
+                    value={editingMember.name}
+                    onChange={e => setEditingMember({...editingMember, name: e.target.value})}
+                    className="w-full px-4 py-3 rounded-2xl border border-slate-200 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none font-bold"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">পিতার নাম</label>
+                  <input 
+                    required
+                    type="text" 
+                    value={editingMember.fatherName}
+                    onChange={e => setEditingMember({...editingMember, fatherName: e.target.value})}
+                    className="w-full px-4 py-3 rounded-2xl border border-slate-200 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none font-bold"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">মোবাইল নম্বর</label>
+                  <input 
+                    required
+                    type="text" 
+                    value={editingMember.phone}
+                    onChange={e => setEditingMember({...editingMember, phone: e.target.value})}
+                    className="w-full px-4 py-3 rounded-2xl border border-slate-200 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none font-bold"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">এনআইডি নম্বর</label>
+                  <input 
+                    type="text" 
+                    value={editingMember.nid}
+                    onChange={setEditingMember ? (e => setEditingMember({...editingMember, nid: e.target.value})) : undefined}
+                    className="w-full px-4 py-3 rounded-2xl border border-slate-200 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none font-bold"
+                  />
+                </div>
+                <div className="space-y-2 md:col-span-2">
+                  <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">ঠিকানা</label>
+                  <textarea 
+                    rows={2}
+                    value={editingMember.address}
+                    onChange={e => setEditingMember({...editingMember, address: e.target.value})}
+                    className="w-full px-4 py-3 rounded-2xl border border-slate-200 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none font-bold"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">নমিনি নাম</label>
+                  <input 
+                    type="text" 
+                    value={editingMember.nomineeName || ''}
+                    onChange={e => setEditingMember({...editingMember, nomineeName: e.target.value})}
+                    className="w-full px-4 py-3 rounded-2xl border border-slate-200 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none font-bold"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">নমিনির সাথে সম্পর্ক</label>
+                  <input 
+                    type="text" 
+                    value={editingMember.nomineeRelationship || ''}
+                    onChange={e => setEditingMember({...editingMember, nomineeRelationship: e.target.value})}
+                    className="w-full px-4 py-3 rounded-2xl border border-slate-200 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none font-bold"
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end gap-3 pt-4">
+                <button 
+                  type="button" 
+                  onClick={() => setEditingMember(null)}
+                  className="px-6 py-3 rounded-2xl text-slate-500 font-black hover:bg-slate-100 transition-all"
+                >
+                  বাতিল
+                </button>
+                <button 
+                  type="submit" 
+                  disabled={isUpdating}
+                  className="px-8 py-3 bg-emerald-600 text-white rounded-2xl font-black shadow-xl shadow-emerald-200 hover:bg-emerald-700 transition-all flex items-center gap-2 disabled:opacity-50"
+                >
+                  {isUpdating ? 'আপডেট হচ্ছে...' : <><Save size={20} /> সংরক্ষণ করুন</>}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
     </div>

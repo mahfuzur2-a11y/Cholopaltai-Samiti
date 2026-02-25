@@ -102,11 +102,26 @@ export const db = {
   },
 
   deleteMember: async (id: string): Promise<void> => {
+    if (!id) throw new Error("ID is required");
     try {
-      const { error } = await supabase.from(COLLECTIONS.MEMBERS).delete().eq('id', id);
+      // 1. Delete associated transactions first
+      const { error: txError } = await supabase
+        .from(COLLECTIONS.TRANSACTIONS)
+        .delete()
+        .eq('memberId', id);
+      
+      if (txError) throw txError;
+
+      // 2. Delete the member
+      const { error } = await supabase
+        .from(COLLECTIONS.MEMBERS)
+        .delete()
+        .eq('id', id);
+      
       if (error) throw error;
-    } catch (e) {
-      console.error("Delete member failed", e);
+    } catch (e: any) {
+      console.error("Delete member failed:", e);
+      throw new Error(e.message || "সদস্য ডিলিট করতে সমস্যা হয়েছে");
     }
   },
 
@@ -152,8 +167,10 @@ export const db = {
           let totalSavings = Number(mData.totalSavings || 0);
           let totalLoan = Number(mData.totalLoan || 0);
           
-          if (tx.type === 'savings' || tx.type === 'admission_fee') {
+          if (tx.type === 'savings') {
             totalSavings += amount;
+          } else if (tx.type === 'admission_fee') {
+            // Admission fee is income, not member savings. Do not update totalSavings.
           } else if (tx.type === 'savings_withdrawal') {
             totalSavings -= amount;
           } else if (tx.type === 'loan_distribution') {
