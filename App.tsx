@@ -88,7 +88,6 @@ const App: React.FC = () => {
     { type: ViewType.LOAN_COLLECTION, label: 'ঋণ আদায়', icon: <HandCoins size={18} />, adminOnly: false },
     { type: ViewType.LOAN_DISTRIBUTION, label: 'ঋণ বিতরণ', icon: <TrendingUp size={18} />, adminOnly: false },
     { type: ViewType.REPORTS, label: 'রিপোর্ট', icon: <BarChart3 size={18} />, adminOnly: false },
-    { type: ViewType.MONTHLY_SHEET, label: 'মাসিক শীট', icon: <FileText size={18} />, adminOnly: false },
     { type: ViewType.MEMBER_LEDGER, label: 'লেজার', icon: <BookOpen size={18} />, adminOnly: false },
     { type: ViewType.PROFIT, label: 'মুনাফা', icon: <Coins size={18} />, adminOnly: false },
     { type: ViewType.USER_MANAGEMENT, label: 'ইউজার', icon: <ShieldCheck size={18} />, adminOnly: true },
