@@ -191,7 +191,7 @@ const MemberLedger: React.FC<MemberLedgerProps> = ({ onBack }) => {
 
       {selectedMember ? (
         <div className="bg-white p-4 md:p-10 rounded-[2.5rem] shadow-2xl border border-slate-100 print:shadow-none print:border-none print:p-0">
-          <div className="text-center mb-10">
+          <div className="text-center mb-4">
             <h1 className="text-3xl font-black text-slate-900 mb-1">চলো পাল্টায় যুব কল্যাণ সমিতি</h1>
             <p className="text-slate-500 font-bold flex items-center justify-center gap-2">
               সদস্য ব্যক্তিগত লেজার বহী <ChevronRight size={14} /> বছর: {selectedYear}
@@ -270,23 +270,6 @@ const MemberLedger: React.FC<MemberLedgerProps> = ({ onBack }) => {
                     
                     <td className="border-r border-slate-200 p-2 text-[9px] text-slate-400 max-w-[80px] truncate">{row.remarks}</td>
                     <td className="p-2"></td>
-                  </tr>
-                ))}
-
-                {ledgerRows.length < 12 && Array.from({ length: 12 - ledgerRows.length }).map((_, i) => (
-                  <tr key={`empty-${i}`} className="h-9">
-                    <td className="border-r border-slate-200"></td>
-                    <td className="border-r border-slate-200"></td>
-                    <td className="border-r border-slate-200"></td>
-                    <td className="border-r border-slate-200"></td>
-                    <td className="border-r border-slate-200"></td>
-                    <td className="border-r border-slate-200"></td>
-                    <td className="border-r border-slate-200"></td>
-                    <td className="border-r border-slate-200"></td>
-                    <td className="border-r border-slate-200"></td>
-                    <td className="border-r border-slate-200"></td>
-                    <td className="border-r border-slate-200"></td>
-                    <td></td>
                   </tr>
                 ))}
 
