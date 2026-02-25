@@ -60,16 +60,18 @@ const MemberLedger: React.FC<MemberLedgerProps> = ({ onBack }) => {
     // Calculate Opening Balances (Transactions before target year)
     memberTxs.forEach(t => {
       const entryYear = t.date.split('-')[0];
+      const amount = Number(t.amount || 0);
+      
       if (entryYear < targetYear) {
-        if (t.type === 'savings') runningSavings += t.amount;
-        if (t.type === 'savings_withdrawal') runningSavings -= t.amount;
+        if (t.type === 'savings') runningSavings += amount;
+        if (t.type === 'savings_withdrawal') runningSavings -= amount;
         
         // Loan logic: distribution adds 110% of amount (Principal + 10% Profit)
         if (t.type === 'loan_distribution') {
-          runningLoan += (t.amount + (t.amount * 0.10));
+          runningLoan += (amount * 1.10);
         }
         if (t.type === 'loan_collection') {
-          runningLoan -= t.amount;
+          runningLoan -= amount;
         }
       }
     });
@@ -81,6 +83,7 @@ const MemberLedger: React.FC<MemberLedgerProps> = ({ onBack }) => {
     const currentYearTxs = memberTxs.filter(t => t.date.startsWith(targetYear));
     
     const rows = currentYearTxs.map(t => {
+      const amount = Number(t.amount || 0);
       const row = {
         date: t.date,
         savingsCollection: 0,
@@ -95,23 +98,23 @@ const MemberLedger: React.FC<MemberLedgerProps> = ({ onBack }) => {
       };
 
       if (t.type === 'savings') {
-        row.savingsCollection = t.amount;
-        runningSavings += t.amount;
+        row.savingsCollection = amount;
+        runningSavings += amount;
       } else if (t.type === 'savings_withdrawal') {
-        row.savingsWithdrawal = t.amount;
-        runningSavings -= t.amount;
+        row.savingsWithdrawal = amount;
+        runningSavings -= amount;
       } else if (t.type === 'savings_penalty') {
-        row.savingsPenalty = t.amount;
+        row.savingsPenalty = amount;
       } else if (t.type === 'loan_distribution') {
-        row.loanDistribution = t.amount;
+        row.loanDistribution = amount;
         // The balance increases by (Amount + 10% Profit)
-        runningLoan += (t.amount + (t.amount * 0.10));
+        runningLoan += (amount * 1.10);
       } else if (t.type === 'loan_collection') {
-        row.loanCollection = t.amount;
+        row.loanCollection = amount;
         // Payment is subtracted directly from the marked-up balance
-        runningLoan -= t.amount;
+        runningLoan -= amount;
       } else if (t.type === 'loan_penalty') {
-        row.loanPenalty = t.amount;
+        row.loanPenalty = amount;
       }
 
       row.savingsBalance = runningSavings;
@@ -174,7 +177,7 @@ const MemberLedger: React.FC<MemberLedgerProps> = ({ onBack }) => {
               onChange={(e) => setSelectedYear(e.target.value)}
               className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-emerald-500 outline-none font-bold cursor-pointer"
             >
-              {["2024", "2025", "2026", "2027"].map(y => (
+              {["2026", "2027", "2028", "2029", "2030"].map(y => (
                 <option key={y} value={y}>{y} ইং</option>
               ))}
             </select>
@@ -195,7 +198,7 @@ const MemberLedger: React.FC<MemberLedgerProps> = ({ onBack }) => {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8 bg-slate-50 p-6 rounded-3xl border border-slate-100">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-4 bg-slate-50 p-6 rounded-3xl border border-slate-100">
             <div>
               <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">সদস্যের নাম</p>
               <p className="font-black text-slate-800 text-lg leading-tight">{selectedMember.name}</p>

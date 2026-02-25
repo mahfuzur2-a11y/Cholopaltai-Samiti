@@ -144,6 +144,7 @@ export const db = {
       const { error: txError } = await supabase
         .from(COLLECTIONS.TRANSACTIONS)
         .insert([{ 
+          id: tx.id,
           memberId: tx.memberId,
           memberName: tx.memberName,
           date: tx.date,
@@ -170,7 +171,8 @@ export const db = {
           if (tx.type === 'savings') {
             totalSavings += amount;
           } else if (tx.type === 'admission_fee') {
-            // Admission fee is income, not member savings. Do not update totalSavings.
+            // Admission fee is income for the society, not member savings.
+            // We record the transaction but don't increase the member's totalSavings balance.
           } else if (tx.type === 'savings_withdrawal') {
             totalSavings -= amount;
           } else if (tx.type === 'loan_distribution') {

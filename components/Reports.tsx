@@ -350,8 +350,8 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
             </button>
           </div>
         </div>
-        <div className="bg-white p-10 rounded-3xl shadow-xl border border-slate-100 print:shadow-none print:border-none print:p-0 overflow-x-auto">
-          <div className="text-center mb-8"><h1 className="text-3xl font-black">চলো পাল্টায় যুব কল্যাণ সমিতি</h1><p className="font-bold text-slate-600 text-lg">মাসিক আদায় তালিকা - {formatBengaliTitle(selectedMonth)}</p></div>
+        <div className="bg-white p-10 rounded-3xl shadow-xl border border-slate-100 print:shadow-none print:border-none print:p-4 overflow-x-auto">
+          <div className="text-center mb-6 print:mb-4"><h1 className="text-3xl font-black">চলো পাল্টায় যুব কল্যাণ সমিতি</h1><p className="font-bold text-slate-600 text-lg">মাসিক আদায় তালিকা - {formatBengaliTitle(selectedMonth)}</p></div>
           <table className="w-full text-[10px] border-collapse border border-slate-300">
             <thead className="bg-slate-50 font-black text-center">
               <tr>
@@ -408,7 +408,7 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
               </tr>
             </tbody>
           </table>
-          <div className="mt-20 hidden print:flex justify-between px-10">
+          <div className="mt-12 print:mt-8 hidden print:flex justify-between px-10">
              <div className="text-center w-32 border-t border-slate-900 pt-1 font-black text-[10px]">ক্যাশিয়ার</div>
              <div className="text-center w-32 border-t border-slate-900 pt-1 font-black text-[10px]">সাধারণ সম্পাদক</div>
              <div className="text-center w-32 border-t border-slate-900 pt-1 font-black text-[10px]">সভাপতি</div>
@@ -488,15 +488,15 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
           </div>
         </div>
         
-        <div className="bg-white p-10 rounded-3xl shadow-xl border border-slate-100 print:shadow-none print:border-none print:p-0 flex flex-col items-center">
-          <div className="text-center mb-10 w-full">
+        <div className="bg-white p-10 rounded-3xl shadow-xl border border-slate-100 print:shadow-none print:border-none print:p-4 flex flex-col items-center">
+          <div className="text-center mb-8 print:mb-6 w-full">
             <h1 className="text-3xl font-black">চলো পাল্টায় যুব কল্যাণ সমিতি</h1>
             <p className="font-black text-slate-800 text-xl border-y border-slate-900 inline-block px-10 py-1 mt-2">
               মাসিক ক্যাশ শীট - {formatBengaliTitle(selectedMonth)}
             </p>
           </div>
 
-          <div className="space-y-12 w-full max-w-5xl">
+          <div className="space-y-8 print:space-y-6 w-full max-w-5xl">
              {/* Section 1: মাসিক হিসাব */}
              <section className="space-y-4">
                <h3 className="font-black text-slate-900 text-lg border-b border-slate-300 pb-1 text-center">মাসিক হিসাব</h3>
@@ -577,7 +577,7 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
              </section>
           </div>
 
-          <div className="mt-32 hidden print:flex justify-between px-10 w-full max-w-5xl">
+          <div className="mt-16 print:mt-10 hidden print:flex justify-between px-10 w-full max-w-5xl">
              <div className="text-center w-40 border-t border-slate-900 pt-1 font-black text-[12px]">ক্যাশিয়ার</div>
              <div className="text-center w-40 border-t border-slate-900 pt-1 font-black text-[12px]">সাধারণ সম্পাদক</div>
              <div className="text-center w-40 border-t border-slate-900 pt-1 font-black text-[12px]">সভাপতি</div>
@@ -601,8 +601,8 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
             </button>
           </div>
         </div>
-        <div className="bg-white p-12 rounded-3xl shadow-xl border border-slate-100 print:shadow-none print:border-none print:p-0 mx-auto max-w-[850px]">
-          <div className="text-center mb-12">
+        <div className="bg-white p-12 rounded-3xl shadow-xl border border-slate-100 print:shadow-none print:border-none print:p-4 mx-auto max-w-[850px]">
+          <div className="text-center mb-8 print:mb-6">
             <h1 className="text-4xl font-black mb-1">চলো পাল্টায় যুব কল্যাণ সমিতি</h1>
             <div className="inline-block border-2 border-slate-900 px-12 py-3 rounded-xl font-black text-2xl mt-4">বার্ষিক রিপোর্ট - {selectedYear} সাল</div>
           </div>
@@ -632,7 +632,7 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
               <tr><td className="border-2 border-slate-900 p-4">ভবিষ্যৎ ঝুঁকি</td><td className="border-2 border-slate-900 p-4 text-right"></td></tr>
             </tbody>
           </table>
-          <div className="mt-32 hidden print:flex justify-between px-10">
+          <div className="mt-16 print:mt-10 hidden print:flex justify-between px-10">
              <div className="text-center w-40 border-t border-slate-900 pt-1 font-black">ক্যাশিয়ার</div>
              <div className="text-center w-40 border-t border-slate-900 pt-1 font-black">সাধারণ সম্পাদক</div>
              <div className="text-center w-40 border-t border-slate-900 pt-1 font-black">সভাপতি</div>
