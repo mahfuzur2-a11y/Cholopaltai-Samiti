@@ -141,10 +141,12 @@ export const db = {
       const amount = Number(tx.amount);
       if (isNaN(amount)) throw new Error("Invalid amount");
 
+      // We explicitly omit the 'id' field here because Supabase expects a UUID 
+      // and we are generating a custom string ID in the frontend. 
+      // By not sending it, Supabase will generate a valid UUID automatically.
       const { error: txError } = await supabase
         .from(COLLECTIONS.TRANSACTIONS)
         .insert([{ 
-          id: tx.id,
           memberId: tx.memberId,
           memberName: tx.memberName,
           date: tx.date,
@@ -171,8 +173,7 @@ export const db = {
           if (tx.type === 'savings') {
             totalSavings += amount;
           } else if (tx.type === 'admission_fee') {
-            // Admission fee is income for the society, not member savings.
-            // We record the transaction but don't increase the member's totalSavings balance.
+            // Admission fee is income, not member savings. Do not update totalSavings.
           } else if (tx.type === 'savings_withdrawal') {
             totalSavings -= amount;
           } else if (tx.type === 'loan_distribution') {
