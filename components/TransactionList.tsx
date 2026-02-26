@@ -3,7 +3,6 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Search, Printer, Calendar, Download } from 'lucide-react';
 import { db } from '../db';
 import { Transaction } from '../types';
-import { parseUserDate } from '../utils';
 
 interface TransactionListProps {
   type: 'savings' | 'loan';
@@ -52,7 +51,7 @@ const TransactionList: React.FC<TransactionListProps> = ({ type, onBack }) => {
     if (type === 'savings') {
       return transactions.filter((t) => {
         if (t.type !== 'savings' && t.type !== 'savings_withdrawal') return false;
-        const transactionMonth = t.date.split('-')[1]; // DD-MM-YY -> MM
+        const transactionMonth = t.date.split('-')[1];
         const matchesMonth = selectedMonth === 'all' || transactionMonth === selectedMonth;
         const matchesSearch = t.memberName.includes(searchTerm) || t.memberId.includes(searchTerm);
         return matchesMonth && matchesSearch;
@@ -61,7 +60,7 @@ const TransactionList: React.FC<TransactionListProps> = ({ type, onBack }) => {
       // Show ongoing loans or loan collection history
       return transactions.filter((t) => {
         if (t.type !== 'loan_distribution' && t.type !== 'loan_collection') return false;
-        const transactionMonth = t.date.split('-')[1]; // DD-MM-YY -> MM
+        const transactionMonth = t.date.split('-')[1];
         const matchesMonth = selectedMonth === 'all' || transactionMonth === selectedMonth;
         const matchesSearch = t.memberName.includes(searchTerm) || t.memberId.includes(searchTerm);
         return matchesMonth && matchesSearch;

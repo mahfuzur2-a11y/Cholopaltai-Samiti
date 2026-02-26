@@ -3,7 +3,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Search, ChevronDown, User, XCircle, Calculator, FileCheck, AlertTriangle, Info } from 'lucide-react';
 import { db } from '../db';
 import { Transaction, Member } from '../types';
-import { formatInputDateToUser } from '../utils';
 
 interface TransactionFormProps {
   type: string;
@@ -18,7 +17,6 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ type, label, onBack, 
   const [amount, setAmount] = useState<string>('');
   const [penalty, setPenalty] = useState<string>(''); // Used for both savings and loan penalty
   const [remarks, setRemarks] = useState('');
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [formFee, setFormFee] = useState<string>('50'); // Default 50 for loan form
   
   // Member Search States
@@ -71,14 +69,14 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ type, label, onBack, 
     }
     
     setLoading(true);
-    const userDate = formatInputDateToUser(date);
+    const date = new Date().toISOString().split('T')[0];
     
     // Primary Transaction
     const tx: Transaction = {
       id: `TX-${Date.now()}`,
       memberId: selectedMember?.id || 'SYSTEM',
       memberName: selectedMember?.name || 'SYSTEM',
-      date: userDate,
+      date: date,
       amount: parseFloat(amount),
       type: type as Transaction['type'],
       remarks: remarks
@@ -187,8 +185,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ type, label, onBack, 
             <input 
               required
               type="date" 
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
+              defaultValue={new Date().toISOString().split('T')[0]}
               className="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all font-bold"
             />
           </div>
