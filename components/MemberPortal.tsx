@@ -3,6 +3,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { User, Phone, Search, ChevronLeft, Wallet, HandCoins, History, LogOut } from 'lucide-react';
 import { db } from '../db';
 import { Member, Transaction } from '../types';
+import { parseUserDate } from '../utils';
 
 interface MemberPortalProps {
   onBack: () => void;
@@ -54,7 +55,7 @@ const MemberPortal: React.FC<MemberPortalProps> = ({ onBack }) => {
     if (!loggedInMember) return [];
     return allTransactions
       .filter(t => t.memberId === loggedInMember.id)
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      .sort((a, b) => parseUserDate(b.date).getTime() - parseUserDate(a.date).getTime());
   }, [loggedInMember, allTransactions]);
 
   if (loggedInMember) {

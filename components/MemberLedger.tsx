@@ -1,5 +1,6 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
+import { parseUserDate } from '../utils';
 import { 
   Printer, 
   User, 
@@ -52,14 +53,14 @@ const MemberLedger: React.FC<MemberLedgerProps> = ({ onBack }) => {
     const targetYear = selectedYear;
     const memberTxs = allTransactions
       .filter(t => t.memberId === selectedMemberId)
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      .sort((a, b) => parseUserDate(a.date).getTime() - parseUserDate(b.date).getTime());
     
     let runningSavings = 0;
     let runningLoan = 0;
     
     // Calculate Opening Balances (Transactions before target year)
     memberTxs.forEach(t => {
-      const entryYear = t.date.split('-')[0];
+      const entryYear = parseUserDate(t.date).getFullYear().toString();
       const amount = Number(t.amount || 0);
       
       if (entryYear < targetYear) {
@@ -80,7 +81,10 @@ const MemberLedger: React.FC<MemberLedgerProps> = ({ onBack }) => {
     const startLoan = runningLoan;
 
     // Filter current year transactions and calculate running balance for rows
-    const currentYearTxs = memberTxs.filter(t => t.date.startsWith(targetYear));
+    const currentYearTxs = memberTxs.filter(t => {
+      const entryYear = parseUserDate(t.date).getFullYear().toString();
+      return entryYear === targetYear;
+    });
     
     const rows = currentYearTxs.map(t => {
       const amount = Number(t.amount || 0);
@@ -244,10 +248,10 @@ const MemberLedger: React.FC<MemberLedgerProps> = ({ onBack }) => {
               </thead>
               <tbody className="text-center font-bold text-slate-700 divide-y divide-slate-200">
                 <tr className="bg-amber-50/20 italic text-slate-400">
-                  <td className="border-r border-slate-200 p-2">01-01-{selectedYear}</td>
+                  <td className="border-r border-slate-200 p-2">01-01-{selectedYear.slice(-2)}</td>
                   <td colSpan={3} className="border-r border-slate-200 p-2 text-right pr-4 font-black">বিগত বছরের স্থিতি (B/F):</td>
                   <td className="border-r border-slate-200 p-2 font-black text-emerald-700 bg-emerald-50/40">৳ {openingSavings.toLocaleString()}</td>
-                  <td className="border-r border-slate-200 p-2">01-01-{selectedYear}</td>
+                  <td className="border-r border-slate-200 p-2">01-01-{selectedYear.slice(-2)}</td>
                   <td colSpan={3} className="border-r border-slate-200 p-2 text-right pr-4 font-black italic">বিগত বছরের ঋণ স্থিতি (আসল + ১০% মুনাফা):</td>
                   <td className="border-r border-slate-200 p-2 font-black text-indigo-700 bg-indigo-50/40">৳ {openingLoan.toLocaleString()}</td>
                   <td className="border-r border-slate-200 p-2"></td>
