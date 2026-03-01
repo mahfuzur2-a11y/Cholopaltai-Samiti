@@ -63,7 +63,7 @@ const MemberLedger: React.FC<MemberLedgerProps> = ({ onBack }) => {
       const amount = Number(t.amount || 0);
       
       if (entryYear < targetYear) {
-        if (t.type === 'savings') runningSavings += amount;
+        if (t.type === 'savings' || t.type === 'profit_distribution') runningSavings += amount;
         if (t.type === 'savings_withdrawal') runningSavings -= amount;
         
         // Loan logic: distribution adds 110% of amount (Principal + 10% Profit)
@@ -97,7 +97,7 @@ const MemberLedger: React.FC<MemberLedgerProps> = ({ onBack }) => {
         remarks: t.remarks || ''
       };
 
-      if (t.type === 'savings') {
+      if (t.type === 'savings' || t.type === 'profit_distribution') {
         row.savingsCollection = amount;
         runningSavings += amount;
       } else if (t.type === 'savings_withdrawal') {

@@ -3,7 +3,6 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { User, Phone, Search, ChevronLeft, Wallet, HandCoins, History, LogOut } from 'lucide-react';
 import { db } from '../db';
 import { Member, Transaction } from '../types';
-import { parseUserDate } from '../utils';
 
 interface MemberPortalProps {
   onBack: () => void;
@@ -55,7 +54,7 @@ const MemberPortal: React.FC<MemberPortalProps> = ({ onBack }) => {
     if (!loggedInMember) return [];
     return allTransactions
       .filter(t => t.memberId === loggedInMember.id)
-      .sort((a, b) => parseUserDate(b.date).getTime() - parseUserDate(a.date).getTime());
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   }, [loggedInMember, allTransactions]);
 
   if (loggedInMember) {
@@ -118,7 +117,7 @@ const MemberPortal: React.FC<MemberPortalProps> = ({ onBack }) => {
                       <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase ${
                         t.type.includes('withdrawal') || t.type.includes('distribution') ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'
                       }`}>
-                        {t.type === 'savings' ? 'সঞ্চয় জমা' : t.type === 'loan_collection' ? 'কিস্তি জমা' : 'লেনদেন'}
+                        {t.type === 'savings' ? 'সঞ্চয় জমা' : t.type === 'loan_collection' ? 'কিস্তি জমা' : t.type === 'profit_distribution' ? 'মুনাফা বন্টন' : 'লেনদেন'}
                       </span>
                     </td>
                     <td className={`px-6 py-4 text-right font-black ${

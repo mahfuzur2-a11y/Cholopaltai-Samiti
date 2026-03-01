@@ -50,12 +50,18 @@ const ProfitView: React.FC<ProfitViewProps> = ({ onBack, onDistribute }) => {
       .filter(t => t.type === 'savings_penalty' || t.type === 'loan_penalty')
       .reduce((sum, t) => sum + t.amount, 0);
 
+    // 5. Distributed Profit (Subtract this from the total income)
+    const distributedProfit = transactions
+      .filter(t => t.type === 'profit_distribution')
+      .reduce((sum, t) => sum + t.amount, 0);
+
     return {
       loanCollectionProfit: Math.round(loanCollectionProfit),
       admissionFees,
       formFees,
       penalties,
-      totalProfit: Math.round(loanCollectionProfit) + admissionFees + formFees + penalties
+      distributedProfit,
+      totalProfit: Math.round(loanCollectionProfit) + admissionFees + formFees + penalties - distributedProfit
     };
   }, [transactions]);
 
@@ -87,6 +93,13 @@ const ProfitView: React.FC<ProfitViewProps> = ({ onBack, onDistribute }) => {
       icon: <FileCheck className="text-amber-600" />, 
       color: 'bg-amber-50', 
       description: 'ঋণ আবেদন ফরম থেকে আয়' 
+    },
+    { 
+      label: 'বন্টিত মুনাফা (-)', 
+      amount: profitData.distributedProfit, 
+      icon: <PieChart className="text-pink-600" />, 
+      color: 'bg-pink-50', 
+      description: 'সদস্যদের মাঝে বন্টিত লভ্যাংশ' 
     },
   ];
 

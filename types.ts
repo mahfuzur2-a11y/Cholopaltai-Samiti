@@ -27,7 +27,7 @@ export interface Transaction {
   memberName: string;
   date: string;
   amount: number;
-  type: 'savings' | 'loan_collection' | 'loan_distribution' | 'expense' | 'savings_withdrawal' | 'bank_deposit' | 'bank_withdrawal' | 'admission_fee' | 'form_fee' | 'savings_penalty' | 'loan_penalty';
+  type: 'savings' | 'loan_collection' | 'loan_distribution' | 'expense' | 'savings_withdrawal' | 'bank_deposit' | 'bank_withdrawal' | 'admission_fee' | 'form_fee' | 'savings_penalty' | 'loan_penalty' | 'profit_distribution';
   remarks?: string;
 }
 

@@ -67,7 +67,11 @@ const ProfitDistribution: React.FC<ProfitDistributionProps> = ({ onBack }) => {
       .filter(t => t.type === 'savings_penalty' || t.type === 'loan_penalty')
       .reduce((sum, t) => sum + t.amount, 0);
 
-    const totalIncome = Math.round(loanCollectionProfit + admissionFees + formFees + penalties);
+    const distributedProfit = transactions
+      .filter(t => t.type === 'profit_distribution')
+      .reduce((sum, t) => sum + t.amount, 0);
+
+    const totalIncome = Math.round(loanCollectionProfit + admissionFees + formFees + penalties - distributedProfit);
     
     const totalExpenses = transactions
       .filter(t => t.type === 'expense')
@@ -138,7 +142,7 @@ const ProfitDistribution: React.FC<ProfitDistributionProps> = ({ onBack }) => {
                 memberName: m.name,
                 date: distributionDate,
                 amount: p,
-                type: 'savings',
+                type: 'profit_distribution',
                 remarks: `মুনাফা বন্টন (${rateNum}%)`
               });
             }
