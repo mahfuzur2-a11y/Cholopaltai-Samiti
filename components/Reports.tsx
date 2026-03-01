@@ -58,7 +58,7 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
           db.getTransactions()
         ]);
         if (isMounted) {
-          setMembers(membersData);
+          setMembers(membersData.sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' })));
           setTxs(txsData);
         }
       } catch (err) {
@@ -295,6 +295,10 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
   );
 
   const MonthlyCollectionSheet = () => {
+    const toBengaliDigits = (num: string | number) => {
+      return num.toString().replace(/\d/g, (d: string) => "০১২৩৪৫৬৭৮৯"[parseInt(d)]);
+    };
+
     const data = members.map((m, idx) => {
       const monthTxs = txs.filter(t => t.memberId === m.id && t.date.startsWith(selectedMonth));
       
@@ -320,7 +324,7 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
       const ldDate = loanDistTx ? loanDistTx.date : '';
       const ldAmt = loanDistTx ? loanDistTx.amount : 0;
 
-      return { sl: idx+1, id: m.id, name: m.name, sDate, sAmt, sFine, lDate, lPrincipal, lProfit, lAmt, lFine, totalForm, ldDate, ldAmt };
+      return { sl: idx+1, id: m.id, name: m.name, sDate, sAmt, sFine, lDate, lPrincipal, lProfit, lAmt, lFine, totalForm, ldDate, ldAmt, bnId: toBengaliDigits(m.id.toString().padStart(2, '0')) };
     });
 
     // Calculate Column Totals
@@ -357,6 +361,7 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
               <tr>
                 <th className="border border-slate-300 p-3">ক্রমিক</th>
                 <th className="border border-slate-300 p-3 text-left">সদস্যের নাম</th>
+                <th className="border border-slate-300 p-3">সদস্য নং</th>
                 <th className="border border-slate-300 p-3" colSpan={3}>সঞ্চয়</th>
                 <th className="border border-slate-300 p-3" colSpan={5}>ঋণ আদায়</th>
                 <th className="border border-slate-300 p-3">ফর্ম</th>
@@ -364,7 +369,7 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
                 <th className="border border-slate-300 p-3">মন্তব্য</th>
               </tr>
               <tr>
-                <th></th><th></th>
+                <th></th><th></th><th></th>
                 <th className="border p-2">তারিখ</th><th className="border p-2">পরিমাণ</th><th className="border p-2">জরিমানা</th>
                 <th className="border p-2">তারিখ</th><th className="border p-2">ঋণ আসল</th><th className="border p-2">মুনাফা</th><th className="border p-2">মোট</th><th className="border p-2">জরিমানা</th>
                 <th className="border p-2">আয়</th>
@@ -377,6 +382,7 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
                 <tr key={r.id} className="border-b hover:bg-slate-50 transition-colors">
                   <td className="border p-3">{r.sl}</td>
                   <td className="border p-3 text-left font-black">{r.name}</td>
+                  <td className="border p-3">{r.bnId}</td>
                   <td className="border p-3 text-[8px] whitespace-nowrap">{r.sDate || '-'}</td>
                   <td className="border p-3">৳{r.sAmt.toLocaleString()}</td>
                   <td className="border p-3 text-rose-500">{r.sFine > 0 ? `৳${r.sFine}` : '-'}</td>
@@ -392,7 +398,7 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
                 </tr>
               ))}
               <tr className="bg-white text-black font-black text-[11px]">
-                <td className="border p-3" colSpan={2}>সর্বমোট (TOTAL)</td>
+                <td className="border p-3" colSpan={3}>সর্বমোট (TOTAL)</td>
                 <td className="border p-3"></td>
                 <td className="border p-3">৳{totals.sAmt.toLocaleString()}</td>
                 <td className="border p-3">৳{totals.sFine.toLocaleString()}</td>
