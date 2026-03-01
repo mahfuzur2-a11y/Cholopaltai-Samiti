@@ -51,7 +51,7 @@ const MemberLedger: React.FC<MemberLedgerProps> = ({ onBack }) => {
     
     const targetYear = selectedYear;
     const memberTxs = allTransactions
-      .filter(t => t.memberId === selectedMemberId)
+      .filter(t => t.memberId === selectedMemberId && t.type !== 'form_fee' && t.type !== 'admission_fee')
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     
     let runningSavings = 0;

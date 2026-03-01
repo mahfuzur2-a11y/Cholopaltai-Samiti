@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { db } from '../db';
 import { Member } from '../types';
+import { formatInputDateToUser } from '../utils';
 
 interface MemberFormProps {
   onBack: () => void;
@@ -57,12 +58,14 @@ const MemberForm: React.FC<MemberFormProps> = ({ onBack, userRole }) => {
     try {
       await db.addMember(newMember);
       
+      const userJoinDate = formatInputDateToUser(formData.joinDate);
+
       // 1. Record the admission fee as a transaction
       await db.addTransaction({
         id: `ADM-${Date.now()}`,
         memberId: newMember.id,
         memberName: newMember.name,
-        date: formData.joinDate,
+        date: userJoinDate,
         amount: parseFloat(formData.admissionFee),
         type: 'admission_fee',
         remarks: 'সদস্য ভর্তি ফি (আয়)'
@@ -75,7 +78,7 @@ const MemberForm: React.FC<MemberFormProps> = ({ onBack, userRole }) => {
           id: `INIT-${Date.now()}`,
           memberId: newMember.id,
           memberName: newMember.name,
-          date: formData.joinDate,
+          date: userJoinDate,
           amount: initSavingsAmount,
           type: 'savings',
           remarks: 'প্রাথমিক সঞ্চয়'

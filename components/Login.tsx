@@ -35,11 +35,6 @@ const Login: React.FC<LoginProps> = ({ onLogin, onEnterPortal }) => {
     }
   };
 
-  const handleReset = () => {
-    if (window.confirm('সতর্কতা: এটি করলে সমস্ত মেম্বার এবং ট্রানজ্যাকশন ডাটা মুছে যাবে! আপনি কি নিশ্চিত?')) {
-      db.resetDatabase();
-    }
-  };
 
   return (
     <div className="min-h-screen bg-emerald-700 flex items-center justify-center p-4 font-['Hind_Siliguri']">
@@ -109,11 +104,7 @@ const Login: React.FC<LoginProps> = ({ onLogin, onEnterPortal }) => {
             </button>
           </form>
 
-          <div className="pt-2 text-center">
-             <button onClick={handleReset} className="text-[10px] text-slate-300 hover:text-rose-400 transition-colors flex items-center gap-1 mx-auto">
-               <RefreshCw size={10} /> ডাটাবেজ রিসেট করুন (লগইন এরর হলে)
-             </button>
-          </div>
+
         </div>
 
         <button 
